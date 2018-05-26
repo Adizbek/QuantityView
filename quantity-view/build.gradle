@@ -1,14 +1,12 @@
 apply plugin: 'com.android.library'
-apply plugin: 'bintray-release'
 android {
-    compileSdkVersion project.ANDROID_BUILD_SDK_VERSION as int
-    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+    compileSdkVersion 27
 
     defaultConfig {
-        minSdkVersion project.ANDROID_BUILD_MIN_SDK_VERSION
-        targetSdkVersion project.ANDROID_BUILD_TARGET_SDK_VERSION
-        versionCode getVersionCode()
-        versionName project.VERSION_NAME
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName '1.0'
     }
 
     buildTypes {
@@ -19,15 +17,10 @@ android {
     }
 }
 
-ext {
-    PUBLISH_GROUP_ID = project.GROUP
-    PUBLISH_VERSION = project.VERSION_NAME
-}
 
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation libden.appCompat
-}
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
-apply from: 'bintrayrelease.gradle'
+}

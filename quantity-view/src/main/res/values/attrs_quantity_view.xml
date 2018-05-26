@@ -21,6 +21,7 @@
 
         <attr name="qv_maxQuantity" format="integer" />
         <attr name="qv_minQuantity" format="integer" />
+        <attr name="qv_step" format="integer" />
     </declare-styleable>
     <declare-styleable name="QuantityViewLabel">
         <attr name="qvl_label" format="string" />

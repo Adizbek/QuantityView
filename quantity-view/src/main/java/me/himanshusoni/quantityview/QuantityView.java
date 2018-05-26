@@ -40,12 +40,21 @@ public class QuantityView extends LinearLayout implements View.OnClickListener {
     private float quantityTextSize;
     private int quantityTextColor, addButtonTextColor, removeButtonTextColor;
 
+    private int step = 1;
+
     private Button mButtonAdd, mButtonRemove;
     private TextView mTextViewQuantity;
 
     private String labelDialogTitle = "Change Quantity";
     private String labelPositiveButton = "Change";
     private String labelNegativeButton = "Cancel";
+    private TextFormatter formatter;
+
+    public void setFormatter(TextFormatter formatter) {
+        this.formatter = formatter;
+
+        updateQuantityText(this.quantity);
+    }
 
     public interface OnQuantityChangeListener {
         /**
@@ -113,6 +122,7 @@ public class QuantityView extends LinearLayout implements View.OnClickListener {
         quantity = a.getInt(R.styleable.QuantityView_qv_quantity, 0);
         maxQuantity = a.getInt(R.styleable.QuantityView_qv_maxQuantity, Integer.MAX_VALUE);
         minQuantity = a.getInt(R.styleable.QuantityView_qv_minQuantity, 0);
+        step = a.getInt(R.styleable.QuantityView_qv_step, 1);
 
         quantityPadding = (int) a.getDimension(R.styleable.QuantityView_qv_quantityPadding, pxFromDp(16));
         quantityButtonIconSize = (int) a.getDimension(R.styleable.QuantityView_qv_controlButtonIconSize, pxFromDp(16));
@@ -217,25 +227,44 @@ public class QuantityView extends LinearLayout implements View.OnClickListener {
         if (onQuantityChangeListener != null) {
             if (onQuantityChangeListener.onQuantityChanged(getId(), oldQty, preNewQty, false)) {
                 quantity = preNewQty;
-                mTextViewQuantity.setText(String.valueOf(preNewQty));
+                updateQuantityText(preNewQty);
             }
         } else {
             quantity = preNewQty;
-            mTextViewQuantity.setText(String.valueOf(preNewQty));
+            updateQuantityText(preNewQty);
         }
+    }
+
+    private void updateQuantityText(String x) {
+        if (formatter != null)
+            mTextViewQuantity.setText(formatter.format(x));
+        else
+            mTextViewQuantity.setText(x);
+    }
+
+    private void updateQuantityText(int x) {
+        updateQuantityText(String.valueOf(x));
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
     }
 
     @Override
     public void onClick(View v) {
         if (v == mButtonAdd) {
             //  int oldQty = quantity;
-            int preNewQty = quantity + 1;
-            quantity_level(quantity, quantity + 1, preNewQty > maxQuantity, maxQuantity);
+            int preNewQty = quantity + step;
+            quantity_level(quantity, quantity + step, preNewQty > maxQuantity, maxQuantity);
 
         } else if (v == mButtonRemove) {
             // int oldQty = quantity;
-            int preNewQty = quantity - 1;
-            quantity_level(quantity, quantity - 1, preNewQty < minQuantity, minQuantity);
+            int preNewQty = quantity - step;
+            quantity_level(quantity, quantity - step, preNewQty < minQuantity, minQuantity);
         } else if (v == mTextViewQuantity) {
             if (!quantityDialog) return;
 
@@ -372,7 +401,9 @@ public class QuantityView extends LinearLayout implements View.OnClickListener {
         if (!limitReached) {
 
             this.quantity = newQuantity;
-            mTextViewQuantity.setText(String.valueOf(this.quantity));
+
+            updateQuantityText(this.quantity);
+
             if (onQuantityChangeListener != null) {
                 onQuantityChangeListener.onQuantityChanged(getId(), quantity, newQuantity, true);
             }
@@ -504,4 +535,7 @@ public class QuantityView extends LinearLayout implements View.OnClickListener {
         mTextViewQuantity.setOnClickListener(b ? this : null);
     }
 
+    public interface TextFormatter {
+        public String format(String string);
+    }
 }
